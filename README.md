@@ -4,7 +4,9 @@ A sample pipeline for managing PowerShell assets in an [Azure Automation](https:
 
 Before starting to work with this sample project, I suggest reading the information in the following blog post:
 
-* [A sample CI/CD pipeline for Azure Automation account](https://andrewmatveychuk.com/a-sample-ci-cd-pipeline-for-azure-automation-account)
+>> To be updated
+
+<!-- * [A sample CI/CD pipeline for Azure Automation account](https://andrewmatveychuk.com/a-sample-ci-cd-pipeline-for-azure-automation-account) -->
 
 Also, you might refer to the following posts regarding the building, publishing and accessing PowerShell modules during deployment:
 
