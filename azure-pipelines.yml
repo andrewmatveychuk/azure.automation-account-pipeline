@@ -120,12 +120,30 @@ stages:
         runOnce:
           deploy:
             steps:
-              - task: DownloadPipelineArtifact@2
-                displayName: Download pipeline artifact
+              - task: DownloadBuildArtifacts@0
+                displayName: Download build artifact
                 inputs:
                   buildType: 'current'
+                  downloadType: 'single'
                   artifactName: 'build'
-                  itemPattern: '**/*'
-                  targetPath: '$(Pipeline.Workspace)'
+                  downloadPath: '$(System.ArtifactsDirectory)'
 
-              #TODO add steps to deploy runbooks to an Azure Automation account
+              - task: PowerShell@2
+                displayName: Install InvokeBuild module on the build agent
+                inputs:
+                  targetType: 'inline'
+                  pwsh: true
+                  script: |
+                    if (-not (Get-Module -Name InvokeBuild -ListAvailable)) {
+                      Install-Module InvokeBuild -Force
+                    }
+                    Import-Module InvokeBuild
+
+              - task: AzurePowerShell@5
+                displayName: Deploy artifact with PSDeploy
+                inputs:
+                  azureSubscription: 'aademo'
+                  ScriptType: InlineScript
+                  pwsh: true
+                  Inline: Invoke-Build -Task Deploy
+                  workingDirectory: '$(System.ArtifactsDirectory)'

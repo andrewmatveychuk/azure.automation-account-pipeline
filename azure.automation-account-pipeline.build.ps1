@@ -200,3 +200,7 @@ task Clean {
         Remove-Item –Path $buildOutputPath –Recurse
     }
 }
+
+task Deploy {
+    Invoke-PSDeploy -Force -Verbose
+}
