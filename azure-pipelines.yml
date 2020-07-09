@@ -1,0 +1,131 @@
+trigger:
+  branches:
+    include:
+    - master
+    - feature/*
+    - hotfix/*
+
+  paths:
+    exclude:
+    - '*.md'
+
+pool:
+  vmImage: 'windows-latest'
+
+stages:
+  - stage: Test
+    jobs:
+      - job: TestJob
+        steps:
+
+        - task: PowerShell@2
+          displayName: Install InvokeBuild module on the build agent
+          inputs:
+            targetType: 'inline'
+            pwsh: true
+            script: |
+              if (-not (Get-Module -Name InvokeBuild -ListAvailable)) {
+                Install-Module InvokeBuild -Force
+              }
+              Import-Module InvokeBuild
+
+        - task: PowerShell@2
+          displayName: Analyze code with PSScriptAnalyzer
+          inputs:
+            targetType: 'inline'
+            pwsh: true
+            script: Invoke-Build -Task Analyze -PAT $(System.AccessToken)
+            workingDirectory: $(System.DefaultWorkingDirectory)
+
+        - task: PublishTestResults@2
+          displayName: Publish code analysis results
+          condition: succeededOrFailed()
+          inputs:
+            testResultsFormat: 'NUnit'
+            testResultsFiles: '$(System.DefaultWorkingDirectory)/**/AnalysisResults*.xml'
+            failTaskOnFailedTests: true
+
+        - task: PowerShell@2
+          displayName: Test code with Pester tests
+          condition: succeededOrFailed()
+          inputs:
+            targetType: 'inline'
+            pwsh: true
+            script: Invoke-Build -Task Test -PAT $(System.AccessToken)
+            workingDirectory: $(System.DefaultWorkingDirectory)
+
+        - task: PublishTestResults@2
+          displayName: Publish test results
+          condition: succeededOrFailed()
+          inputs:
+            testResultsFormat: 'NUnit'
+            testResultsFiles: '$(System.DefaultWorkingDirectory)/**/TestResults*.xml'
+            failTaskOnFailedTests: true
+
+        - task: PowerShell@2
+          displayName: Verify code coverage
+          condition: succeededOrFailed()
+          inputs:
+            targetType: 'inline'
+            pwsh: true
+            failOnStderr: true
+            script: Invoke-Build -Task CodeCoverage -PAT $(System.AccessToken)
+            workingDirectory: $(System.DefaultWorkingDirectory)
+
+        - task: PublishCodeCoverageResults@1
+          displayName: Publish code coverage results
+          condition: succeededOrFailed()
+          inputs:
+            codeCoverageTool: 'JaCoCo'
+            summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/CodeCoverageResults*.xml'
+            pathToSources: '$(System.DefaultWorkingDirectory)/runbooks/'
+
+  - stage: Build
+    jobs:
+      - job: BuildJob
+        steps:
+          - task: PowerShell@2
+            displayName: Install InvokeBuild module on the build agent
+            inputs:
+              targetType: 'inline'
+              pwsh: true
+              script: |
+                if (-not (Get-Module -Name InvokeBuild -ListAvailable)) {
+                  Install-Module InvokeBuild -Force
+                }
+                Import-Module InvokeBuild
+
+          - task: PowerShell@2
+            displayName: Build PowerShell module
+            inputs:
+              targetType: 'inline'
+              pwsh: true
+              script: Invoke-Build -Task Build -PAT $(System.AccessToken)
+              workingDirectory: $(System.DefaultWorkingDirectory)
+
+          - task: PublishBuildArtifacts@1
+            displayName: Publish build artifact
+            inputs:
+              PathtoPublish: '$(System.DefaultWorkingDirectory)/build'
+              ArtifactName: 'build'
+              publishLocation: Container
+
+  - stage: Deploy
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+    jobs:
+    - deployment: DeploymentJob
+      displayName: Deploy PowerShell artifacts to Azure Automation account
+      environment: 'Test'
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+              - task: DownloadPipelineArtifact@2
+                displayName: Download pipeline artifact
+                inputs:
+                  buildType: 'current'
+                  artifactName: 'build'
+                  itemPattern: '**/*'
+                  targetPath: '$(Pipeline.Workspace)'
+
+              #TODO add steps to deploy runbooks to an Azure Automation account
