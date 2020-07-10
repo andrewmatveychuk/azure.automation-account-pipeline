@@ -192,6 +192,10 @@ task Build {
 
     Get-ChildItem -Path $dscFolderPath -Filter '*.ps1' -Recurse | Where-Object -Property Name -notlike '*Tests.ps1' | Copy-Item -Destination $dscOutputPath
     #endregion Copy DSC configurations
+
+    #region Copy deployment configuration
+    Get-ChildItem -Path $BuildRoot -Filter '*deploy.ps1' | Copy-Item -Destination $buildOutputPath
+    #endregion Copy deployment configuration
 }
 
 # Synopsis: Clean up the target build directory
