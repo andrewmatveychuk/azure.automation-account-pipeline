@@ -144,7 +144,7 @@ stages:
                 inputs:
                   azureSubscription: 'aademo'
                   ScriptType: InlineScript
-                  Inline: Invoke-Build -Task Deploy
-                  workingDirectory: '$(System.ArtifactsDirectory)'
+                  Inline: Invoke-Build -Task Deploy -Verbose
+                  workingDirectory: '$(System.ArtifactsDirectory)/build'
                   pwsh: true
                   azurePowerShellVersion: latestVersion
