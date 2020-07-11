@@ -164,3 +164,4 @@ stages:
                   workingDirectory: '$(Pipeline.Workspace)'
                   pwsh: true
                   azurePowerShellVersion: latestVersion
+                  errorActionPreference: continue
