@@ -120,13 +120,13 @@ stages:
         runOnce:
           deploy:
             steps:
-              - task: DownloadBuildArtifacts@0
-                displayName: Download build artifact
-                inputs:
-                  buildType: 'current'
-                  downloadType: 'single'
-                  artifactName: 'build'
-                  downloadPath: '$(System.ArtifactsDirectory)'
+              # - task: DownloadBuildArtifacts@0
+              #   displayName: Download build artifact
+              #   inputs:
+              #     buildType: 'current'
+              #     downloadType: 'single'
+              #     artifactName: 'build'
+              #     downloadPath: '$(System.ArtifactsDirectory)'
 
               - task: PowerShell@2
                 displayName: Install InvokeBuild module on the build agent
@@ -145,6 +145,6 @@ stages:
                   azureSubscription: 'aademo'
                   ScriptType: InlineScript
                   Inline: Invoke-Build -Task Deploy -Verbose
-                  workingDirectory: '$(System.ArtifactsDirectory)/build'
+                  workingDirectory: '$(System.DefaultWorkingDirectory)/build'
                   pwsh: true
                   azurePowerShellVersion: latestVersion
