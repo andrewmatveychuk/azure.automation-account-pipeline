@@ -141,7 +141,7 @@ stages:
                   source: 'current'
                   artifact: 'build'
                   #patterns: '**' # Optional
-                  path: '$(Pipeline.Workspace)'
+                  path: '$(Pipeline.Workspace)/build'
 
               - task: PowerShell@2
                 displayName: Install PSDeploy module on the build agent

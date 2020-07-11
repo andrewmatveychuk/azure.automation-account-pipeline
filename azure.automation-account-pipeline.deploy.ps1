@@ -28,7 +28,7 @@ Deploy PackageManagement {
 # Deploy a DSC configuration
 Deploy hybridWorkerConfiguration {
     By AzureAutomationDscConfiguration {
-        FromSource ".\build\dsc-configurations\hybridWorkerConfiguration.ps1"
+        FromSource "build\dsc-configurations\hybridWorkerConfiguration.ps1"
         To "aademo-aa-73xuwp74ekl6a"
         WithOptions @{
             ResourceGroupName = "aademo-rg-65pwanldm3ese"
@@ -53,7 +53,7 @@ Deploy hybridWorkerConfiguration {
 # Deploy an Azure Automation runbook
 Deploy Get-ExecutionContextInfo {
     By AzureAutomationRunbook {
-        FromSource ".\build\runbooks\Get-ExecutionContextInfo.ps1"
+        FromSource "build\runbooks\Get-ExecutionContextInfo.ps1"
         To "aademo-aa-73xuwp74ekl6a"
         WithOptions @{
             RunbookName       = "Get-ExecutionContextInfo"
