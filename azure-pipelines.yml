@@ -144,15 +144,15 @@ stages:
                   path: '$(Pipeline.Workspace)'
 
               - task: PowerShell@2
-                displayName: Install InvokeBuild module on the build agent
+                displayName: Install PSDeploy module on the build agent
                 inputs:
                   targetType: 'inline'
                   pwsh: true
                   script: |
-                    if (-not (Get-Module -Name InvokeBuild -ListAvailable)) {
-                      Install-Module InvokeBuild -Force
+                    if (-not (Get-Module -Name PSDeploy -ListAvailable)) {
+                      Install-Module PSDeploy -Force
                     }
-                    Import-Module InvokeBuild
+                    Import-Module PSDeploy
 
               - task: AzurePowerShell@5
                 displayName: Deploy artifact with PSDeploy
@@ -160,7 +160,7 @@ stages:
                 inputs:
                   azureSubscription: 'aademo'
                   ScriptType: InlineScript
-                  Inline: Invoke-Build -Task Deploy -Verbose
+                  Inline: Invoke-PSDeploy -Force -Verbose
                   workingDirectory: '$(Pipeline.Workspace)'
                   pwsh: true
                   azurePowerShellVersion: latestVersion
