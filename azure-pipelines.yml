@@ -119,8 +119,6 @@ stages:
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master')) # Deploy only from the master branch
     jobs:
     - deployment: DeploymentJob
-      variables:
-        # system.debug: true
       displayName: Deploy PowerShell artifacts to Azure Automation account
       environment: 'Test'
       strategy:
@@ -156,7 +154,6 @@ stages:
 
               - task: AzurePowerShell@5
                 displayName: Deploy artifact with PSDeploy
-
                 inputs:
                   azureSubscription: 'aademo'
                   ScriptType: InlineScript
