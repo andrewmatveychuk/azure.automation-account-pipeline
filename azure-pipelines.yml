@@ -103,12 +103,17 @@ stages:
               script: Invoke-Build -Task Build -PAT $(System.AccessToken)
               workingDirectory: $(System.DefaultWorkingDirectory)
 
-          - task: PublishBuildArtifacts@1
-            displayName: Publish build artifact
+          # - task: PublishBuildArtifacts@1
+          #   displayName: Publish build artifact
+          #   inputs:
+          #     PathtoPublish: '$(System.DefaultWorkingDirectory)/build'
+          #     ArtifactName: 'build'
+          #     publishLocation: Container
+
+          - task: PublishPipelineArtifact@1
             inputs:
-              PathtoPublish: '$(System.DefaultWorkingDirectory)/build'
-              ArtifactName: 'build'
-              publishLocation: Container
+              targetPath: '$(System.DefaultWorkingDirectory)/build'
+              artifactName: 'build'
 
   - stage: Deploy
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master')) # Deploy only from the master branch
@@ -122,6 +127,7 @@ stages:
         runOnce:
           deploy:
             steps:
+              - download: none
               # - task: DownloadBuildArtifacts@0
               #   displayName: Download build artifact
               #   inputs:
@@ -129,6 +135,13 @@ stages:
               #     downloadType: 'single'
               #     artifactName: 'build'
               #     downloadPath: '$(System.ArtifactsDirectory)'
+
+              - task: DownloadPipelineArtifact@2
+                inputs:
+                  source: 'current'
+                  artifact: 'build'
+                  #patterns: '**' # Optional
+                  path: '$(Pipeline.Workspace)'
 
               - task: PowerShell@2
                 displayName: Install InvokeBuild module on the build agent
@@ -148,6 +161,6 @@ stages:
                   azureSubscription: 'aademo'
                   ScriptType: InlineScript
                   Inline: Invoke-Build -Task Deploy -Verbose
-                  workingDirectory: '$(Agent.BuildDirectory)'
+                  workingDirectory: '$(Pipeline.Workspace)/build'
                   pwsh: true
                   azurePowerShellVersion: latestVersion
