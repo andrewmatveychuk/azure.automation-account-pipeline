@@ -120,7 +120,7 @@ stages:
     jobs:
     - deployment: DeploymentJob
       variables:
-        system.debug: true
+        # system.debug: true
       displayName: Deploy PowerShell artifacts to Azure Automation account
       environment: 'Test'
       strategy:
@@ -164,4 +164,4 @@ stages:
                   workingDirectory: '$(Pipeline.Workspace)'
                   pwsh: true
                   azurePowerShellVersion: latestVersion
-                  errorActionPreference: continue
+                  errorActionPreference: silentlyContinue # Using error supression as a workaround to AzureAutomationModule deployment task
