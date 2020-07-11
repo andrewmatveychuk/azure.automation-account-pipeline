@@ -161,6 +161,6 @@ stages:
                   azureSubscription: 'aademo'
                   ScriptType: InlineScript
                   Inline: Invoke-Build -Task Deploy -Verbose
-                  workingDirectory: '$(Pipeline.Workspace)/build'
+                  workingDirectory: '$(Pipeline.Workspace)'
                   pwsh: true
                   azurePowerShellVersion: latestVersion
