@@ -103,13 +103,6 @@ stages:
               script: Invoke-Build -Task Build -PAT $(System.AccessToken)
               workingDirectory: $(System.DefaultWorkingDirectory)
 
-          # - task: PublishBuildArtifacts@1
-          #   displayName: Publish build artifact
-          #   inputs:
-          #     PathtoPublish: '$(System.DefaultWorkingDirectory)/build'
-          #     ArtifactName: 'build'
-          #     publishLocation: Container
-
           - task: PublishPipelineArtifact@1
             inputs:
               targetPath: '$(System.DefaultWorkingDirectory)/build'
@@ -126,19 +119,11 @@ stages:
           deploy:
             steps:
               - download: none
-              # - task: DownloadBuildArtifacts@0
-              #   displayName: Download build artifact
-              #   inputs:
-              #     buildType: 'current'
-              #     downloadType: 'single'
-              #     artifactName: 'build'
-              #     downloadPath: '$(System.ArtifactsDirectory)'
 
               - task: DownloadPipelineArtifact@2
                 inputs:
                   source: 'current'
                   artifact: 'build'
-                  #patterns: '**' # Optional
                   path: '$(Pipeline.Workspace)/build'
 
               - task: PowerShell@2
