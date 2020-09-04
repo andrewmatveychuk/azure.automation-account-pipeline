@@ -140,7 +140,7 @@ stages:
               - task: AzurePowerShell@5
                 displayName: Deploy artifact with PSDeploy
                 inputs:
-                  azureSubscription: 'aademo'
+                  azureSubscription: 'Personal'
                   ScriptType: InlineScript
                   Inline: Invoke-PSDeploy -Force -Verbose
                   workingDirectory: '$(Pipeline.Workspace)'

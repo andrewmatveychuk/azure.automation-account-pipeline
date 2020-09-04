@@ -2,11 +2,11 @@
 Deploy PSDepend {
     By AzureAutomationModule {
         FromSource "https://www.powershellgallery.com/api/v2"
-        To "aademo-aa-73xuwp74ekl6a"
+        To "aademo-aa-2d6feraanlyem"
         WithOptions @{
             SourceIsAbsolute  = $true
             ModuleName        = "PSDepend"
-            ResourceGroupName = "aademo-rg-65pwanldm3ese"
+            ResourceGroupName = "aademo-rg-wijiqagxjnoja"
             # Force             = $true # If you what to override an existing module
         }
     }
@@ -15,12 +15,12 @@ Deploy PSDepend {
 Deploy PackageManagement {
     By AzureAutomationModule {
         FromSource "https://www.powershellgallery.com/api/v2"
-        To "aademo-aa-73xuwp74ekl6a"
+        To "aademo-aa-2d6feraanlyem"
         WithOptions @{
             SourceIsAbsolute  = $true
             ModuleName        = "PackageManagement"
             ModuleVersion     = '1.4.7'
-            ResourceGroupName = "aademo-rg-65pwanldm3ese"
+            ResourceGroupName = "aademo-rg-wijiqagxjnoja"
         }
     }
 }
@@ -29,9 +29,9 @@ Deploy PackageManagement {
 Deploy hybridWorkerConfiguration {
     By AzureAutomationDscConfiguration {
         FromSource "build\dsc-configurations\hybridWorkerConfiguration.ps1"
-        To "aademo-aa-73xuwp74ekl6a"
+        To "aademo-aa-2d6feraanlyem"
         WithOptions @{
-            ResourceGroupName = "aademo-rg-65pwanldm3ese"
+            ResourceGroupName = "aademo-rg-wijiqagxjnoja"
             Published         = $true
             Force             = $true
             Compile           = $true
@@ -54,10 +54,10 @@ Deploy hybridWorkerConfiguration {
 Deploy Get-ExecutionContextInfo {
     By AzureAutomationRunbook {
         FromSource "build\runbooks\Get-ExecutionContextInfo.ps1"
-        To "aademo-aa-73xuwp74ekl6a"
+        To "aademo-aa-2d6feraanlyem"
         WithOptions @{
             RunbookName       = "Get-ExecutionContextInfo"
-            ResourceGroupName = "aademo-rg-65pwanldm3ese"
+            ResourceGroupName = "aademo-rg-wijiqagxjnoja"
             Force             = $true
         }
         DependingOn PSDepend, hybridWorkerConfiguration

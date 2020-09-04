@@ -1,5 +1,2 @@
 # Build output
 build/
-
-# Snippets to deploy test environment
-arm-templates/
