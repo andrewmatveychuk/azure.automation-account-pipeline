@@ -1,0 +1,82 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "applicationName": {
+            "type": "string",
+            "metadata": {
+                "description": "Application name"
+            }
+        },
+        "logAnalyticsSKU": {
+            "type": "string",
+            "allowedValues": [
+                "PerGB2018",
+                "Free",
+                "Standalone",
+                "PerNode",
+                "Standard",
+                "Premium"
+            ],
+            "defaultValue": "Free",
+            "metadata": {
+                "description": "Pricing tier: PerGB2018 or legacy tiers (Free, Standalone, PerNode, Standard or Premium), which are not available to all customers."
+            }
+        },
+        "automationAccountSKU": {
+            "type": "string",
+            "allowedValues": [
+                "Free",
+                "Basic"
+            ],
+            "defaultValue": "Free",
+            "metadata": {
+                "description": "Pricing tier fro Automation account."
+            }
+        }
+    },
+    "variables": {
+        "logAnalyticsWorkspaceName": "[concat(parameters('applicationName'), '-la-', uniqueString(resourceGroup().Id))]",
+        "automationAccountName": "[concat(parameters('applicationName'), '-aa-', uniqueString(resourceGroup().Id))]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.OperationalInsights/workspaces",
+            "apiVersion": "2020-03-01-preview",
+            "name": "[variables('logAnalyticsWorkspaceName')]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "logAnalyticsSKU": {
+                    "name": "[parameters('logAnalyticsSKU')]"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Automation/automationAccounts",
+            "apiVersion": "2015-10-31",
+            "name": "[variables('automationAccountName')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[variables('logAnalyticsWorkspaceName')]"
+            ],
+            "properties": {
+                "sku": {
+                    "name": "[parameters('automationAccountSKU')]"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.OperationalInsights/workspaces/linkedServices",
+            "apiVersion": "2020-03-01-preview",
+            "name": "[concat(variables('logAnalyticsWorkspaceName'), '/' , 'Automation')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[variables('logAnalyticsWorkspaceName')]",
+                "[variables('automationAccountName')]"
+            ],
+            "properties": {
+                "resourceId": "[resourceId('Microsoft.Automation/automationAccounts', variables('automationAccountName'))]"
+            }
+        }
+    ]
+}
